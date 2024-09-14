@@ -20,12 +20,12 @@ Sub Demo_ListAndEnumurator()
 	Set enumerator = myList.GetEnumerator
 	'Set enumerator = (New ListEnumerator)(myList)
 	
-	u.Debug VbCrLf & "do..until loop #1:"
+	u.Debug VbCrLf & "do..until #1:"
 	Do
 		u.Debug vbTab & enumerator.Current
 	Loop Until Not enumerator.MoveNext
 	
-	u.Debug VbCrLf & "do while..loop #1:"
+	u.Debug VbCrLf & "do while #1:"
 	Do While enumerator.MoveNext
 		u.Debug vbTab & enumerator.Current
 	Loop
@@ -35,15 +35,17 @@ Sub Demo_ListAndEnumurator()
 	myList.RemoveAt(i)
 	u.Debug "new size=" & myList.Count
 	
-	u.Debug VbCrLf & "do..until loop #2:"
-	Do
-		u.Debug vbTab & enumerator.Current
-	Loop Until Not enumerator.MoveNext
 
-	u.Debug VbCrLf & "do while..loop #2:"
+	u.Debug VbCrLf & "do while #2:"
 	Do While enumerator.MoveNext
 		u.Debug vbTab & enumerator.Current
 	Loop
+
+	u.Debug VbCrLf & "do..until #2:"
+	Do
+		u.Debug vbTab & enumerator.Current
+	Loop Until Not enumerator.MoveNext
+	
 End Sub
 
 Sub IncludeSimple(includeFilePath)
