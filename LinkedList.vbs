@@ -5,9 +5,8 @@ IncludeSimple "MyUtils.vbs"
 Demo_LikedList()
 
 Sub Demo_LikedList()
+	Dim i, j
 	Dim u : Set u = New MyUtils
-	Dim i, j, flag
-
 	Dim myList : Set myList = New LinkedList
 	
 	j = 0
@@ -16,24 +15,28 @@ Sub Demo_LikedList()
 		u.Debug j & ") add " & i
 	Next
 	u.Debug "Length = " & myList.Length
-	u.Debug "GetLength() = " & myList.GetLength()
+	u.Debug "GetLength() = " & myList.GetLength() & VbCrLf
 
-	i = 5
-	flag = myList.Remove(i)
-	u.Debug VbCrLf & "remove element that its value=" & i & " ... result= " & CStr(flag)
+	Dim removedValues, flag
+	removedValues = Array(0, 2, 4, 6)
+	j = 0
+	For Each i In removedValues
+		j = j + 1
+		flag = myList.Remove(i)
+		u.Debug j & ") remove element that its value=" & i & " ... result= " & CStr(flag)
+	Next
 	u.Debug "Length = " & myList.Length
-	u.Debug "GetLength() = " & myList.GetLength()
+	u.Debug "GetLength() = " & myList.GetLength() & VbCrLf
 
-	u.Debug VbCrLf
-	If u.IsNothing(myList.Search(i)) Then
-		u.Debug "search element that its value=" & i & " ... not found."
-	Else
-		u.Debug "search element that its value=" & i & " ... still found."
-	End If
+	For Each i In removedValues
+		If u.IsNothing(myList.Search(i)) Then
+			u.Debug "search element that its value=" & i & " ... not found."
+		Else
+			u.Debug "search element that its value=" & i & " ... still found."
+		End If
+	Next
 	
-	
-	u.Debug VbCrLf
-	' Print the remaining elements
+	u.Debug VbCrLf & "traditional loop for reading all members:"
 	Dim currentNode
 	Set currentNode = myList.FirstNode
 
@@ -42,18 +45,17 @@ Sub Demo_LikedList()
 		Set currentNode = currentNode.NextNode
 	Loop
 	
-	
 	Dim enumerator
 	Set enumerator = myList.GetEnumerator
 	
 	u.Debug VbCrLf & "do while #1:"
 	Do While enumerator.MoveNext()
-		u.Debug enumerator.Current.Data
+		WScript.echo enumerator.Current.Data
 	Loop
 	
 	u.Debug VbCrLf & "do..until  #1:"
 	Do
-		u.Debug enumerator.Current.Data
+		WScript.echo enumerator.Current.Data
 	Loop Until Not enumerator.MoveNext()
 End Sub
 
@@ -91,7 +93,6 @@ End Class
 
 Class LinkedList
 	Public FirstNode
-
 	Private m_util
 	Private m_count
 
@@ -105,6 +106,10 @@ Class LinkedList
 		Set FirstNode = Nothing
 		Set m_util = Nothing
 	End Sub
+
+	Private Function isNothing(obj)
+		isNothing = obj Is Nothing
+	End Function
 	
 	Public Sub Add(data)
 		Dim newNode : Set newNode = (New Node)(data)
@@ -146,7 +151,7 @@ Class LinkedList
 		Set previousNode = Nothing
 		ret = False
 		
-		Do While Not m_util.IsNothing(currentNode)
+		Do While Not (m_util.IsNothing(currentNode) Or ret)
 			If currentNode.Data = data Then
 				If m_util.IsNothing(previousNode) Then
 					Set FirstNode = currentNode.NextNode
@@ -157,15 +162,11 @@ Class LinkedList
 				Set currentNode = Nothing
 				m_count = m_count - 1
 				ret = True
-				
-				Exit Do
+			Else
+				Set previousNode = currentNode
+				Set currentNode = currentNode.NextNode
 			End If
-
-			Set previousNode = currentNode
-			Set currentNode = currentNode.NextNode
 		Loop
-
-
 		remove = ret
 	End Function
 
@@ -174,7 +175,7 @@ Class LinkedList
 		Set currentNode = FirstNode
 		Set ret = Nothing
 
-		Do While Not m_util.isNothing(currentNode)
+		Do While Not m_util.IsNothing(currentNode)
 			If currentNode.Data = data Then
 				Set ret = currentNode
 				Exit Do
